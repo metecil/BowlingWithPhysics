@@ -22,6 +22,7 @@ public class BallController : MonoBehaviour
 
         // Make the ball kinematic until it is fired
         ballRB.isKinematic = true;
+        ResetBall();
     }
 
     private void LaunchBall()
@@ -40,11 +41,11 @@ public class BallController : MonoBehaviour
         launchIndicator.gameObject.SetActive(false);
     }
 
-    // Optional: A method to reset the ball for another launch
     public void ResetBall()
     {
         isBallLaunched = false;
         ballRB.isKinematic = true;
+        launchIndicator.gameObject.SetActive(true);
         transform.parent = ballAnchor;
         transform.localPosition = Vector3.zero;
     }
