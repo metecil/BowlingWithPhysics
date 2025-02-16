@@ -4,31 +4,48 @@ using UnityEngine.Events;
 public class BallController : MonoBehaviour
 {
     [SerializeField] private float force = 1f;
+    [SerializeField] private Transform ballAnchor;
     [SerializeField] private InputManager inputManager;
+    [SerializeField] private Transform launchIndicator; // Used later for aiming
 
-    private Rigidbody ballRB;
     private bool isBallLaunched;
-    
+    private Rigidbody ballRB;
+
     void Start()
     {
-        // Grab the Rigidbody attached to the ball
         ballRB = GetComponent<Rigidbody>();
-
-        // Subscribe to the space key event
         inputManager.OnSpacePressed.AddListener(LaunchBall);
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        // Parent the ball to the BallAnchor and reset its local position
+        transform.parent = ballAnchor;
+        transform.localPosition = Vector3.zero;
+
+        // Make the ball kinematic until it is fired
+        ballRB.isKinematic = true;
     }
 
     private void LaunchBall()
     {
-        if (isBallLaunched) return; // Prevent multiple launches
+        if (isBallLaunched) return;
         isBallLaunched = true;
-        ballRB.AddForce(transform.forward * force, ForceMode.Impulse);
+
+        // Unparent the ball so it is no longer affected by the player
+        transform.parent = null;
+
+        // Enable physics by setting isKinematic to false
+        ballRB.isKinematic = false;
+
+        // Apply force to the ball; here you could also use the launchIndicator for direction
+        ballRB.AddForce(launchIndicator.forward * force, ForceMode.Impulse);
+        launchIndicator.gameObject.SetActive(false);
+    }
+
+    // Optional: A method to reset the ball for another launch
+    public void ResetBall()
+    {
+        isBallLaunched = false;
+        ballRB.isKinematic = true;
+        transform.parent = ballAnchor;
+        transform.localPosition = Vector3.zero;
     }
 }
